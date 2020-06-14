@@ -14,8 +14,6 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -65,7 +63,7 @@ public class CustomerResource {
       return new StreamingOutput() {
          public void write(OutputStream outputStream)
                        throws IOException, WebApplicationException {
-            outputCustomer(new PrintStream(outputStream), customer);
+            outputCustomer(outputStream, customer);
          }
       };
    }
@@ -82,22 +80,8 @@ public class CustomerResource {
            
       };
    }
-   private void outputAllCustomer(OutputStream os) throws IOException {
-       PrintStream writer = new PrintStream(os);
-        writer.println("<customers>");
-        if (customerDB == null || customerDB.isEmpty()) {
-         throw new WebApplicationException(
-                                          Response.Status.NO_CONTENT);
-      }
-       customerDB.values().stream().forEach(customer -> {
-           try {
-               outputCustomer(writer,customer);
-           } catch (IOException ex) {
-               Logger.getLogger(CustomerResource.class.getName()).log(Level.SEVERE, null, ex);
-           }
-       });
-        writer.println("</customers>");
-   
+   private void outputAllCustomer(OutputStream outputStream) throws IOException {
+       System.out.println("Testing");
    }
    
    @PUT
@@ -118,8 +102,10 @@ public class CustomerResource {
       current.setCountry(update.getCountry());
    }
    
-    protected void outputCustomer(PrintStream writer, Customer cust)
-                                                     throws IOException {  
+   
+    protected void outputCustomer(OutputStream os, Customer cust)
+                                                     throws IOException {
+      PrintStream writer = new PrintStream(os);
       writer.println("<customer id=\"" + cust.getId() + "\">");
       writer.println("   <first-name>" + cust.getFirstName()
                       + "</first-name>");
